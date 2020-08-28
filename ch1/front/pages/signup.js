@@ -13,72 +13,47 @@ const tailLayout = {
 };
 
 function signup() {
-  const [state, setState] = useState({
-    id: "",
-    nickName: "",
-    password: "",
-    passwordCheck: "",
-    term: false,
-    passwordError: false,
-    termError: false,
-  });
-
-  const [id, setId] = useState("");
-  const [nickName, setNickName] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordCheck, setPasswordCheck] = useState("");
+  const [id, onChangeId] = useInput("");
+  const [nickName, onChangeNickname] = useInput("");
+  const [password, onChangePassword] = useInput("");
+  const [passwordCheck, onChangePasswordCheck] = useInput("");
   const [term, setTerm] = useState("");
+  const [passwordError, setPasswordError] = useState(false);
+  const [termError, setTermError] = useState(false);
 
   const onFinish = (values) => {
-    const { password, passwordCheck, term } = state;
     if (password !== passwordCheck) {
-      setState({ ...state, passwordError: true });
+      setPasswordError(passwordCheck !== password);
       return;
     }
 
     if (!term) {
-      setState({ ...state, termError: true });
+      setTermError(!term);
       return;
     }
-    console.log("Success:", state);
+    console.log("Success:", id, password, nickName);
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
 
-  const onChnageId = (e) => {
-    setState({ ...state, id: e.target.value });
-  };
-
-  const onChnageNickName = (e) => {
-    setState({ ...state, nickName: e.target.value });
-  };
-
-  const onChnagePassword = (e) => {
-    setState({ ...state, password: e.target.value });
-  };
-
-  const onChnagePasswordCheck = (e) => {
-    const { password } = state;
-    console.log(password, e.target.value);
-    if (password !== e.target.value) {
-      console.log("password 달라");
-      setState({ ...state, passwordError: true });
-    } else {
-      setState({ ...state, passwordError: false });
-    }
-    setState({ ...state, passwordCheck: e.target.value });
+  const onChangePasswordCheck = (e) => {
+    setPasswordError(e.target.value !== password);
+    setPasswordCheck(e.target.value);
   };
 
   const onChangeTerm = (e) => {
-    if (!e.target.checked) {
-      console.log("term ㅜnO");
-      setState({ ...state, termError: true });
-    } else {
-      setState({ ...state, termError: false });
-    }
-    setState({ ...state, term: e.target.checked });
+    setTermError(!e.target.checked);
+    setTerm(e.target.checked);
+  };
+
+  const useInput = (initvalue = null) => {
+    const [value, setter] = useState(initvalue);
+    const handler = (e) => {
+      setter(e.target.value);
+    };
+    return [value, handler];
   };
 
   return (
@@ -102,9 +77,9 @@ function signup() {
               <br />
               <Input
                 name="user-id"
-                value={state.id}
+                value={id}
                 required
-                onChange={onChnageId}
+                onChange={onChangeId}
               ></Input>
             </div>
             <div>
@@ -113,8 +88,8 @@ function signup() {
               <Input
                 name="user-nickname"
                 required
-                value={state.nickName}
-                onChange={onChnageNickName}
+                value={nickName}
+                onChange={onChangeNickname}
               ></Input>
             </div>
             <div>
@@ -124,8 +99,8 @@ function signup() {
                 name="user-password"
                 required
                 type="password"
-                value={state.password}
-                onChange={onChnagePassword}
+                value={password}
+                onChange={onChangePassword}
               ></Input>
             </div>
             <div>
@@ -135,24 +110,20 @@ function signup() {
                 type="password"
                 name="user-password-check"
                 required
-                value={state.passwordCheck}
-                onChange={onChnagePasswordCheck}
+                value={passwordCheck}
+                onChange={onChangePasswordCheck}
               ></Input>
-              {state.passwordError && (
+              {passwordError && (
                 <div style={{ color: "red" }}>
                   비밀번호가 일치하지 않습니다.
                 </div>
               )}
             </div>
             <div>
-              <Checkbox
-                name="user-term"
-                checked={state.term}
-                onChange={onChangeTerm}
-              >
+              <Checkbox name="user-term" checked={term} onChange={onChangeTerm}>
                 동의하시겠습니까?
               </Checkbox>
-              {state.termError && (
+              {termError && (
                 <div style={{ color: "red" }}>약관에 동의하셔야 합니다.</div>
               )}
             </div>
