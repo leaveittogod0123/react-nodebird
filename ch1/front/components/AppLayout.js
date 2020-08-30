@@ -1,6 +1,17 @@
 import * as React from "react";
-import { Menu, Input, Button } from "antd";
+
+import { Menu, Input, Row, Col } from "antd";
 import Link from "next/link";
+import LoginForm from "./LoginForm";
+import UserProfile from "./UserProfile";
+
+const dummy = {
+  nickname: "요셉노",
+  Post: [],
+  Followings: [],
+  Followers: [],
+  isLoggedIn: false,
+};
 
 export default function AppLayout({ children }) {
   return (
@@ -20,12 +31,25 @@ export default function AppLayout({ children }) {
           <Input.Search enterButton style={{ verticalAlign: "middle" }} />
         </Menu.Item>
       </Menu>
-      <Link href="/signup">
-        <a>
-          <Button>회원가입</Button>
-        </a>
-      </Link>
-      {children}
+
+      <Row>
+        <Col xs={24} md={6}>
+          {dummy.isLoggedIn && <UserProfile />}
+          {!dummy.isLoggedIn && <LoginForm />}
+        </Col>
+        <Col xs={24} md={12}>
+          {children}
+        </Col>
+        <Col xs={24} md={6}>
+          <a
+            href="https://www.zerocho.com"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            Made by ZeroCho
+          </a>
+        </Col>
+      </Row>
     </div>
   );
 }
